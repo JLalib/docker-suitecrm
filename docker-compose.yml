@@ -1,21 +1,27 @@
 # Copyright Broadcom, Inc. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
-
 services:
   mariadb:
+    container_name: mariadb
     image: docker.io/bitnami/mariadb:latest
     environment:
+      - ALLOW_EMPTY_PASSWORD=no  # Recomendación de seguridad: no permitir contraseñas vacías
       - MARIADB_USER=bn_suitecrm
       - MARIADB_DATABASE=bitnami_suitecrm
       - MARIADB_PASSWORD=bitnami123
+      - MARIADB_ROOT_PASSWORD=root_password  # Añadir contraseña para el usuario root
     volumes:
       - 'mariadb_data:/bitnami/mariadb'
+    restart: always  # Asegurar reinicio automático
+
   suitecrm:
+    container_name: crm
     image: docker.io/bitnami/suitecrm:8
     ports:
-      - '80:8080'
-      - '443:8443'
+      - '8080:8080'  # Puerto HTTP
+      - '4443:8443'  # Puerto HTTPS
     environment:
+      - ALLOW_EMPTY_PASSWORD=no  # Recomendación de seguridad
       - SUITECRM_DATABASE_HOST=mariadb
       - SUITECRM_DATABASE_PORT_NUMBER=3306
       - SUITECRM_DATABASE_USER=bn_suitecrm
@@ -24,7 +30,9 @@ services:
     volumes:
       - 'suitecrm_data:/bitnami/suitecrm'
     depends_on:
-      - mariadb
+      - mariadb  # Define la dependencia explícita
+    restart: always  # Asegurar reinicio automático
+
 volumes:
   mariadb_data:
     driver: local
