@@ -1,2 +1,1 @@
-# docker-suitecrm
-Suite CRM | 
+# Suite CRM | 
